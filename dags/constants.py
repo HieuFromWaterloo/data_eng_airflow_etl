@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 
-default_args = {
+S3_BUCKET='s3-cua-tao'
+
+DEFAULT_ARGS = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime(2023, 07, 11),
