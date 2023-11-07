@@ -1,8 +1,20 @@
 #!/bin/bash
 sudo apt update -y && sudo apt upgrade -y
-sudo apt install -y python3-pip python3.11-venv
+sudo apt install -y python3-pip python3.10-venv awscli
+# Python 3.11 on Amazon Linux
+# sudo wget https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tgz
+# sudo tar xzf Python-3.*.tgz
+# cd Python-3.11.5
+# # Configure the build process. This script checks your system for necessary features and libraries
+# # The --enable-optimizations flag optimizes the Python binary by running multiple tests and making some tweaks, resulting in a slight performance improvement.
+# sudo ./configure --enable-optimizations
+# # Using `altinstall` instead of `install` avoids replacing the existing Python binary in your system, which could potentially break certain functionalities that rely on the original Python version.
+# sudo make altinstall
+# cd ..
+# sudo rm -f Python-3.*.tgz 
+git clone https://github.com/HieuFromWaterloo/data_eng_airflow_etl.git
+cd data_eng_airflow_etl
+sudo chmod +x setup.sh
 python3 -m venv airflow_venv
 source airflow_venv/bin/activate
-cd ./data_eng_airflow_etl
-sudo chmod +x setup.sh
-pip3 install -r requirements.txt
+pip install -r requirements.txt
