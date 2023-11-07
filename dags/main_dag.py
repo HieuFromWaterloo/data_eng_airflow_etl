@@ -1,5 +1,6 @@
+import os
 from airflow import DAG
-from datetime import timedelta, datetime
+from datetime import datetime
 from airflow.providers.http.sensors.http import HttpSensor
 import json
 from airflow.providers.http.operators.http import SimpleHttpOperator
@@ -7,6 +8,7 @@ from airflow.operators.python import PythonOperator
 import pandas as pd
 from constants import *
 import boto3
+from dotenv import load_dotenv
 
 # To connect to an AWS service
 # reference: https://towardsthecloud.com/aws-sdk-aws-credentials-boto3
@@ -14,6 +16,10 @@ import boto3
 # *IMPORTANT NOTE: an IAM role to access s3 bucket must be created prior to connecting without explicitly putting in your credentials
 s3 = boto3.resource('s3')
 
+# load .env
+load_dotenv()
+# init endpoint api key
+endpoint_key = os.getenv("DATA_API_KEY")
 
 def kelvin_to_celcius(temp_in_kelvin):
     return (temp_in_kelvin - 273.15)
@@ -70,14 +76,14 @@ with DAG('weather_dag',
         is_weather_api_ready = HttpSensor(
             task_id ='is_weather_api_ready',
             http_conn_id='weathermap_api',
-            endpoint='/data/2.5/weather?q=Toronto&APPID=5031cde3d1a8b9469fd47e998d7aef79'
+            endpoint=f'/data/2.5/weather?q=Toronto&APPID={endpoint_key}'
         )
 
 
         extract_weather_data = SimpleHttpOperator(
             task_id = 'extract_weather_data',
             http_conn_id = 'weathermap_api',
-            endpoint='/data/2.5/weather?q=Toronto&APPID=5031cde3d1a8b9469fd47e998d7aef79',
+            endpoint=f'/data/2.5/weather?q=Toronto&APPID={endpoint_key}',
             method = 'GET',
             response_filter= lambda r: json.loads(r.text),
             log_response=True
