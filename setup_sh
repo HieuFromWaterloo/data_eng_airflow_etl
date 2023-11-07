@@ -12,9 +12,9 @@ sudo apt install -y python3-pip python3.10-venv awscli
 # sudo make altinstall
 # cd ..
 # sudo rm -f Python-3.*.tgz 
-git clone https://github.com/HieuFromWaterloo/data_eng_airflow_etl.git
+# git clone https://github.com/HieuFromWaterloo/data_eng_airflow_etl.git
 cd data_eng_airflow_etl
-sudo chmod +x setup.sh
+# sudo chmod +x setup.sh
 python3 -m venv airflow_venv
 source airflow_venv/bin/activate
 pip install -r requirements.txt

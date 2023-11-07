@@ -6,6 +6,14 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.operators.python import PythonOperator
 import pandas as pd
 from constants import *
+import boto3
+
+# To connect to an AWS service
+# reference: https://towardsthecloud.com/aws-sdk-aws-credentials-boto3
+# reference iam: https://www.youtube.com/watch?v=TlCuOjviOhk
+# *IMPORTANT NOTE: an IAM role to access s3 bucket must be created prior to connecting without explicitly putting in your credentials
+s3 = boto3.resource('s3')
+
 
 def kelvin_to_celcius(temp_in_kelvin):
     return (temp_in_kelvin - 273.15)
@@ -41,12 +49,16 @@ def transform_load_data(task_instance):
                         }
     transformed_data_list = [transformed_data]
     df_data = pd.DataFrame(transformed_data_list)
-    aws_credentials = {"key": "xxxxxxxxx", "secret": "xxxxxxxxxx", "token": "xxxxxxxxxxxxxx"}
 
     now = datetime.now()
     dt_string = now.strftime("%d%m%Y%H%M%S")
     dt_string = f'current_weather_data_toronto_{dt_string}'
-    df_data.to_csv(f"s3://weatherapiairflowyoutubebucket-yml/{dt_string}.csv", index=False, storage_options=aws_credentials)
+    df_data.to_csv(f"{dt_string}.csv", sep=',', index=False)
+
+    # Upload files to S3 bucket
+    # the key param is to indicate the filename that you want it to be saved in s3
+    # e.g. equivant cli: aws s3 cp Filename s3://<s3_bucket_name>/Key
+    s3.Bucket('krishtest1').upload_file(Filename=f"{dt_string}.csv", Key=f"{dt_string}.csv")
 
 
 with DAG('weather_dag',
