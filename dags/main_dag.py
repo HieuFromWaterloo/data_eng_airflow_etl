@@ -11,9 +11,10 @@ from constants import *
 import boto3
 from dotenv import load_dotenv
 
-# Load JSON config file
-with open('/home/ubuntu/airflow/config_api.json', 'r') as config_file:
-    api_host_key = json.load(config_file)
+# load .env
+load_dotenv()
+# init endpoint api key
+api_host_key = os.getenv("ZILLOW_API_KEY")
 
 now = datetime.now()
 dt_now_string = now.strftime("%d%m%Y%H%M%S")
@@ -23,11 +24,6 @@ dt_now_string = now.strftime("%d%m%Y%H%M%S")
 # reference iam: https://www.youtube.com/watch?v=TlCuOjviOhk
 # *IMPORTANT NOTE: an IAM role to access s3 bucket must be created prior to connecting without explicitly putting in your credentials
 s3 = boto3.resource('s3')
-
-# load .env
-load_dotenv()
-# init endpoint api key
-endpoint_key = os.getenv("DATA_API_KEY")
 
 def extract_zillow_data(**kwargs):
     url = kwargs['url']
@@ -59,7 +55,7 @@ with DAG('zillow_analytics_dag',
         python_callable=extract_zillow_data,
         op_kwargs={
             'url': 'https://zillow56.p.rapidapi.com/search',
-            'querystring': {"location": "houston, tx"},
+            'querystring': {"location": "toronto, canada"},
             'headers': api_host_key,
             'date_string': datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         }
