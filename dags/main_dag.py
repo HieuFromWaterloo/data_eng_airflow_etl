@@ -58,7 +58,7 @@ def transform_load_data(task_instance):
     # Upload files to S3 bucket
     # the key param is to indicate the filename that you want it to be saved in s3
     # e.g. equivant cli: aws s3 cp Filename s3://<s3_bucket_name>/Key
-    s3.Bucket('krishtest1').upload_file(Filename=f"{dt_string}.csv", Key=f"{dt_string}.csv")
+    s3.Bucket('s3-cua-tao').upload_file(Filename=f"{dt_string}.csv", Key=f"{dt_string}.csv")
 
 
 with DAG('weather_dag',
