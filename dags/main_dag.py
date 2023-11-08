@@ -60,7 +60,7 @@ with DAG('zillow_analytics_dag',
 
     load_to_s3_task = BashOperator(
         task_id='load_to_s3_task',
-        bash_command='aws s3 mv {{ ti.xcom_pull(task_ids="extract_zillow_data_task")[0] }} s3://endtoendyoutube-ym-bucket/'
+        bash_command='aws s3 mv {{ ti.xcom_pull(task_ids="extract_zillow_data_task")[0] }} s3://S3_BUCKET/'
     )
 
     is_file_in_s3_available_task = S3KeySensor(
