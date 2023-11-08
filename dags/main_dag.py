@@ -13,8 +13,14 @@ from dotenv import load_dotenv
 
 # load .env
 load_dotenv()
-# init endpoint api key
-api_host_key = os.getenv("ZILLOW_API_KEY")
+
+# stop all airflow 
+# kill $(ps -ef | grep "airflow scheduler" | awk '{print $2}')
+# kill $(ps aux | grep "airflow" | awk '{print $2}')
+
+# init api headers
+api_host_key = {"X-RapidAPI-Key": os.getenv("API_KEY"),
+                "X-RapidAPI-Host":  os.getenv("API_HOST")}
 
 # To connect to an AWS service
 # reference: https://towardsthecloud.com/aws-sdk-aws-credentials-boto3
@@ -60,7 +66,7 @@ with DAG('zillow_analytics_dag',
 
     load_to_s3_task = BashOperator(
         task_id='load_to_s3_task',
-        bash_command='aws s3 mv {{ ti.xcom_pull(task_ids="extract_zillow_data_task")[0] }} s3://S3_BUCKET/'
+        bash_command=f'aws s3 mv {{ ti.xcom_pull(task_ids="extract_zillow_data_task")[0] }} s3://{S3_BUCKET}/'
     )
 
     is_file_in_s3_available_task = S3KeySensor(
