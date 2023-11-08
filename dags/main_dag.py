@@ -16,9 +16,6 @@ load_dotenv()
 # init endpoint api key
 api_host_key = os.getenv("ZILLOW_API_KEY")
 
-now = datetime.now()
-dt_now_string = now.strftime("%d%m%Y%H%M%S")
-
 # To connect to an AWS service
 # reference: https://towardsthecloud.com/aws-sdk-aws-credentials-boto3
 # reference iam: https://www.youtube.com/watch?v=TlCuOjviOhk
@@ -36,13 +33,13 @@ def extract_zillow_data(**kwargs):
 
 
     # Specify the output file path
-    output_file_path = f"/home/ubuntu/response_data_{dt_string}.json"
+    output_file_path = f"/home/ubuntu/response_data_date={dt_string}.json"
     file_str = f'response_data_{dt_string}.csv'
 
     # Write the JSON response to a file
     with open(output_file_path, "w") as output_file:
         json.dump(response_data, output_file, indent=4)  # indent for pretty formatting
-    return [output_file_path, file_str]   
+    return output_file_path, file_str
 
 
 with DAG('zillow_analytics_dag',
