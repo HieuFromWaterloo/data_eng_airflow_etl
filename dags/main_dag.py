@@ -92,7 +92,7 @@ with DAG('zillow_analytics_dag',
         s3_bucket=S3_TRANSFORMED_BUCKET,
         s3_key='{{ ti.xcom_pull(task_ids="extract_zillow_data_task")[1] }}',
         schema="PUBLIC",
-        table="zillowdata",
+        table="TorontoHousing",
         copy_options=["csv IGNOREHEADER 1"]
     )
 
