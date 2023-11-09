@@ -39,7 +39,7 @@ def extract_zillow_data(**kwargs):
 
 
     # Specify the output file path
-    filename=f'response_data_date={dt_string}'
+    filename=f'response_data_{dt_string}'
     output_file_path = f"/home/ubuntu/extract_output/{filename}.json"
     file_str = f'{filename}.csv'
 
@@ -69,11 +69,6 @@ with DAG('zillow_analytics_dag',
         }
     )
 
-    # load_to_s3_task = BashOperator(
-    #     task_id='load_to_s3_task',
-    #     bash_command=f'aws s3 mv {{ ti.xcom_pull(task_ids="extract_zillow_data_task")[0] }} s3://{S3_EXTRACT_BUCKET}/'
-    # )
-
     # this operator ensure that there exists the transformed csv file b4 triggering S3->Redshift Operator
     is_file_in_s3_available_task = S3KeySensor(
         task_id='is_file_in_s3_available_task',
@@ -97,5 +92,4 @@ with DAG('zillow_analytics_dag',
     )
 
     # Setting up the task dependencies
-    # extract_zillow_data_task >> load_to_s3_task >> is_file_in_s3_available_task >> transfer_s3_to_redshift_task
     extract_zillow_data_task >> is_file_in_s3_available_task >> transfer_s3_to_redshift_task
