@@ -48,7 +48,7 @@ def extract_zillow_data(**kwargs):
         json.dump(response_data, output_file, indent=4)  # indent for pretty formatting
 
     # Upload files to S3 bucket
-    s3.Bucket(S3_BUCKET).upload_file(Filename=output_file_path, Key=f"{filename}.json")
+    s3.Bucket(S3_EXTRACT_BUCKET).upload_file(Filename=output_file_path, Key=f"{filename}.json")
 
     return output_file_path, file_str
 
@@ -71,13 +71,13 @@ with DAG('zillow_analytics_dag',
 
     # load_to_s3_task = BashOperator(
     #     task_id='load_to_s3_task',
-    #     bash_command=f'aws s3 mv {{ ti.xcom_pull(task_ids="extract_zillow_data_task")[0] }} s3://{S3_BUCKET}/'
+    #     bash_command=f'aws s3 mv {{ ti.xcom_pull(task_ids="extract_zillow_data_task")[0] }} s3://{S3_EXTRACT_BUCKET}/'
     # )
 
     is_file_in_s3_available_task = S3KeySensor(
         task_id='is_file_in_s3_available_task',
         bucket_key='{{ ti.xcom_pull(task_ids="extract_zillow_data_task")[1] }}',
-        bucket_name=S3_BUCKET,
+        bucket_name=S3_EXTRACT_BUCKET,
         aws_conn_id='aws_s3_conn',
         wildcard_match=False, # Set to True if you want to use wildcards in the prefix
         timeout=60, # in seconds
@@ -88,7 +88,7 @@ with DAG('zillow_analytics_dag',
         task_id="transfer_s3_to_redshift_task",
         aws_conn_id='aws_s3_conn',
         redshift_conn_id='conn_id_redshift',
-        s3_bucket=S3_BUCKET,
+        S3_EXTRACT_BUCKET=S3_EXTRACT_BUCKET,
         s3_key='{{ ti.xcom_pull(task_ids="extract_zillow_data_task")[1] }}',
         schema="PUBLIC",
         table="zillowdata",
