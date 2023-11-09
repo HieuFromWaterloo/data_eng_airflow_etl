@@ -74,28 +74,28 @@ with DAG('zillow_analytics_dag',
     #     bash_command=f'aws s3 mv {{ ti.xcom_pull(task_ids="extract_zillow_data_task")[0] }} s3://{S3_EXTRACT_BUCKET}/'
     # )
 
+    # this operator ensure that there exists the transformed csv file b4 triggering S3->Redshift Operator
     is_file_in_s3_available_task = S3KeySensor(
         task_id='is_file_in_s3_available_task',
         bucket_key='{{ ti.xcom_pull(task_ids="extract_zillow_data_task")[1] }}',
-        bucket_name=S3_EXTRACT_BUCKET,
+        bucket_name=S3_TRANSFORMED_BUCKET,
         aws_conn_id='aws_s3_conn',
         wildcard_match=False, # Set to True if you want to use wildcards in the prefix
         timeout=60, # in seconds
         poke_interval=5 # in seconds
     )
 
-    # transfer_s3_to_redshift_task = S3ToRedshiftOperator(
-    #     task_id="transfer_s3_to_redshift_task",
-    #     aws_conn_id='aws_s3_conn',
-    #     redshift_conn_id='conn_id_redshift',
-    #     S3_EXTRACT_BUCKET=S3_EXTRACT_BUCKET,
-    #     s3_key='{{ ti.xcom_pull(task_ids="extract_zillow_data_task")[1] }}',
-    #     schema="PUBLIC",
-    #     table="zillowdata",
-    #     copy_options=["csv IGNOREHEADER 1"]
-    # )
+    transfer_s3_to_redshift_task = S3ToRedshiftOperator(
+        task_id="transfer_s3_to_redshift_task",
+        aws_conn_id='aws_s3_conn',
+        redshift_conn_id='conn_id_redshift',
+        S3_EXTRACT_BUCKET=S3_TRANSFORMED_BUCKET,
+        s3_key='{{ ti.xcom_pull(task_ids="extract_zillow_data_task")[1] }}',
+        schema="PUBLIC",
+        table="zillowdata",
+        copy_options=["csv IGNOREHEADER 1"]
+    )
 
     # Setting up the task dependencies
     # extract_zillow_data_task >> load_to_s3_task >> is_file_in_s3_available_task >> transfer_s3_to_redshift_task
-    # extract_zillow_data_task >> is_file_in_s3_available_task >> transfer_s3_to_redshift_task
-    extract_zillow_data_task >> is_file_in_s3_available_task
+    extract_zillow_data_task >> is_file_in_s3_available_task >> transfer_s3_to_redshift_task

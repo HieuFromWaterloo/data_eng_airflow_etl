@@ -10,7 +10,7 @@ def lambda_handler(event, context):
     object_key = event['Records'][0]['s3']['object']['key']
    
     # Define the target bucket where the object will be copied
-    target_bucket = 'S3_LOAD_BUCKET'
+    target_bucket = 'ENTER_S3_LOAD_BUCKET_HERE'
     
     # Define the copy source dictionary
     copy_source = {'Bucket': source_bucket, 'Key': object_key}
@@ -25,5 +25,5 @@ def lambda_handler(event, context):
     # Return a success response
     return {
         'statusCode': 200,
-        'body': json.dumps('Copy completed successfully')
+        'body': json.dumps('lambda func: json loaded successfully')
     }

@@ -41,5 +41,5 @@ def lambda_handler(event, context):
     # Return a success response
     return {
         'statusCode': 200,
-        'body': json.dumps('CSV conversion and S3 upload completed successfully')
+        'body': json.dumps('lambda func: CSV conversion and S3 upload completed successfully')
     }
