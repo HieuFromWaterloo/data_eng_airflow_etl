@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 
-S3_BUCKET='s3-cua-tao'
+S3_EXTRACT_BUCKET='s3://s3-cua-tao/data_eng_etl/zillow/extract_output'
+S3_LOAD_BUCKET='s3://s3-cua-tao/data_eng_etl/zillow/load_output'
+S3_TRANSFORMED_BUCKET='s3://s3-cua-tao/data_eng_etl/zillow/transformed_output'
 
 DEFAULT_ARGS = {
     'owner': 'airflow',

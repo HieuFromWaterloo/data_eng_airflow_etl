@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     object_key = event['Records'][0]['s3']['object']['key']
     
     # Define the target bucket and the target file name (removing the '.json' extension)
-    target_bucket = 'cleaned-data-zone-csv-bucket'
+    target_bucket = 'ENTER_S3_TRANSFORMED_BUCKET_HERE'
     target_file_name = object_key.replace('.json', '')
     
     # Wait for the source object to exist before attempting to read

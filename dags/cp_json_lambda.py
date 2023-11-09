@@ -10,7 +10,7 @@ def lambda_handler(event, context):
     object_key = event['Records'][0]['s3']['object']['key']
    
     # Define the target bucket where the object will be copied
-    target_bucket = 'copy-of-raw-json-bucket'
+    target_bucket = 'S3_LOAD_BUCKET'
     
     # Define the copy source dictionary
     copy_source = {'Bucket': source_bucket, 'Key': object_key}
